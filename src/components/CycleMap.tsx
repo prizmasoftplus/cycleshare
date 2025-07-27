@@ -47,7 +47,13 @@ export const CycleMap: React.FC = () => {
   const [customStations, setCustomStations] = useState<CustomStation[]>([]);
   const [isCustomStationModalOpen, setIsCustomStationModalOpen] = useState(false);
   const [editingCustomStation, setEditingCustomStation] = useState<CustomStation | null>(null);
+  const [selectedCustomLabel, setSelectedCustomLabel] = useState('');
 
+  // Filter custom stations by selected label
+  const filteredCustomStations = useMemo(() => {
+    if (!selectedCustomLabel) return customStations;
+    return customStations.filter(station => station.label === selectedCustomLabel);
+  }, [customStations, selectedCustomLabel]);
   const loadBikePoints = useCallback(async () => {
     try {
       // Don't set loading true for background refreshes
@@ -261,7 +267,7 @@ export const CycleMap: React.FC = () => {
         onPolygonComplete={handlePolygonComplete}
         priorities={priorities}
         showTraffic={showTraffic}
-        customStations={customStations}
+        customStations={filteredCustomStations}
         onCustomStationClick={handleCustomStationClick}
       />
 
@@ -294,6 +300,9 @@ export const CycleMap: React.FC = () => {
         allStations={stations}
         notInUseCount={notInUseCount}
         onNotInUseCountChange={setNotInUseCount}
+        customStations={customStations}
+        selectedCustomLabel={selectedCustomLabel}
+        onCustomLabelChange={setSelectedCustomLabel}
       />
 
       {directionsResult && <DirectionsInfo result={directionsResult} onClear={handleClearDirections} />}

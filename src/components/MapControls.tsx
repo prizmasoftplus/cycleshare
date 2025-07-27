@@ -3,6 +3,7 @@ import { Search, RefreshCw, Filter, Info, PenSquare, ChevronDown, Trash2, CheckS
 import { SavedArea } from '../hooks/useAreas';
 import { StatusFilter, TimeFilter } from '../services/stationHistoryService';
 import { StationStats } from '../types/station';
+import { CustomStation } from '../services/customStationsService';
 
 interface MapControlsProps {
   onRefresh: () => void;
@@ -33,6 +34,9 @@ interface MapControlsProps {
   allStations: StationStats[];
   notInUseCount: number;
   onNotInUseCountChange: (count: number) => void;
+  customStations: CustomStation[];
+  selectedCustomLabel: string;
+  onCustomLabelChange: (label: string) => void;
 }
 
 export const MapControls: React.FC<MapControlsProps> = ({
@@ -64,6 +68,9 @@ export const MapControls: React.FC<MapControlsProps> = ({
   allStations,
   notInUseCount,
   onNotInUseCountChange
+  customStations,
+  selectedCustomLabel,
+  onCustomLabelChange
 }) => {
   const [isAreaMenuOpen, setIsAreaMenuOpen] = useState(false);
   const [isTimeFilterOpen, setIsTimeFilterOpen] = useState(false);
@@ -71,6 +78,9 @@ export const MapControls: React.FC<MapControlsProps> = ({
   const timeFilterRef = useRef<HTMLDivElement>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Get unique custom station labels
+  const customLabels = [...new Set(customStations.map(s => s.label).filter(Boolean))].sort();
 
   // Calculate filter counts
   const getFilterCount = (filterType: StatusFilter): number => {
@@ -385,6 +395,24 @@ export const MapControls: React.FC<MapControlsProps> = ({
             >
               <Plus className="w-5 h-5" />
             </button>
+            {/* Custom Station Label Filter */}
+            {customLabels.length > 0 && (
+              <div className="relative">
+                <select
+                  value={selectedCustomLabel}
+                  onChange={(e) => onCustomLabelChange(e.target.value)}
+                  className="text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  title="Filter custom stations by label"
+                >
+                  <option value="">All Custom</option>
+                  {customLabels.map(label => (
+                    <option key={label} value={label}>
+                      {label} ({customStations.filter(s => s.label === label).length})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <button
               onClick={onToggleFilter}
               className={`p-2 rounded-md transition-colors ${
