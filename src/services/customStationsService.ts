@@ -72,6 +72,13 @@ export class CustomStationsService {
     this.saveCustomStations([]);
   }
 
+  // Get all unique labels that have been used
+  getUsedLabels(): string[] {
+    const stations = this.getCustomStations();
+    const labels = stations.map(s => s.label).filter(label => label.trim() !== '');
+    return [...new Set(labels)].sort(); // Remove duplicates and sort alphabetically
+  }
+
   // Predefined color options
   getColorOptions(): { value: string; label: string; preview: string }[] {
     return [

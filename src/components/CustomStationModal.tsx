@@ -117,6 +117,7 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
   const [description, setDescription] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isMultipleMode, setIsMultipleMode] = useState(false);
+  const [showLabelDropdown, setShowLabelDropdown] = useState(false);
   const [useDefaultCoordinates, setUseDefaultCoordinates] = useState(true);
   const [showPredefinedStations, setShowPredefinedStations] = useState(false);
   const [predefinedSearchTerm, setPredefinedSearchTerm] = useState('');
@@ -124,6 +125,7 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
   const [geocodingResult, setGeocodingResult] = useState<{ lat: number; lng: number; area: string } | null>(null);
 
   const colorOptions = customStationsService.getColorOptions();
+  const usedLabels = customStationsService.getUsedLabels();
 
   // Filter predefined stations based on search
   const filteredPredefinedStations = PREDEFINED_STATIONS.filter(station =>
