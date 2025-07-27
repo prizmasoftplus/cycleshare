@@ -506,7 +506,6 @@ export const MapControls: React.FC<MapControlsProps> = ({
                             key={label}
                             onClick={() => handleTagToggle(label)}
                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between"
-                            disabled={selectedCustomLabels.includes('__custom_only__')}
                           >
                             <div className="flex items-center">
                               {isSelected ? (
@@ -514,22 +513,18 @@ export const MapControls: React.FC<MapControlsProps> = ({
                               ) : (
                                 <Square className="w-4 h-4 mr-2 text-gray-400" />
                               )}
-                              <span className={selectedCustomLabels.includes('__custom_only__') ? 'text-gray-400' : ''}>
+                              <span>
                                 {label}
                               </span>
                             </div>
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                              selectedCustomLabels.includes('__custom_only__') 
-                                ? 'bg-gray-100 text-gray-400' 
-                                : 'bg-blue-100 text-blue-600'
-                            }`}>
+                            <span className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600">
                               {count}
                             </span>
                           </button>
                         );
                       })}
                       
-                      {selectedCustomLabels.length > 0 && !selectedCustomLabels.includes('__custom_only__') && (
+                      {selectedCustomLabels.length > 0 && (
                         <>
                           <hr className="my-1" />
                           <button
