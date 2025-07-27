@@ -52,8 +52,17 @@ export const CycleMap: React.FC = () => {
   // Filter custom stations by selected label
   const filteredCustomStations = useMemo(() => {
     if (!selectedCustomLabel) return customStations;
+    if (selectedCustomLabel === '__custom_only__') return customStations;
     return customStations.filter(station => station.label === selectedCustomLabel);
   }, [customStations, selectedCustomLabel]);
+
+  // Filter regular stations based on custom label selection
+  const displayedStations = useMemo(() => {
+    if (selectedCustomLabel === '__custom_only__' || (selectedCustomLabel && selectedCustomLabel !== '')) {
+      return []; // Hide all regular TfL stations when showing custom stations only
+    }
+    return filteredStations;
+  }, [filteredStations, selectedCustomLabel]);
   const loadBikePoints = useCallback(async () => {
     try {
       // Don't set loading true for background refreshes
@@ -255,7 +264,7 @@ export const CycleMap: React.FC = () => {
   return (
     <div className="relative h-screen">
       <GoogleMap
-        stations={filteredStations}
+        stations={displayedStations}
         onStationClick={handleStationClick}
         searchTerm={searchTerm}
         favoriteIds={favoriteIds}

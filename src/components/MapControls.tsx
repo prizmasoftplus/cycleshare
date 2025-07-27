@@ -401,10 +401,11 @@ export const MapControls: React.FC<MapControlsProps> = ({
                 <select
                   value={selectedCustomLabel}
                   onChange={(e) => onCustomLabelChange(e.target.value)}
-                  className="text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
                   title="Filter custom stations by label"
                 >
-                  <option value="">All Custom</option>
+                  <option value="">All Stations</option>
+                  <option value="__custom_only__">Custom Only</option>
                   {customLabels.map(label => (
                     <option key={label} value={label}>
                       {label} ({customStations.filter(s => s.label === label).length})
