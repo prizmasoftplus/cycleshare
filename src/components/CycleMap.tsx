@@ -56,6 +56,17 @@ export const CycleMap: React.FC = () => {
     return customStations.filter(station => station.label === selectedCustomLabel);
   }, [customStations, selectedCustomLabel]);
 
+  // Filter stations based on status history
+  const filteredStations = useMemo(() => {
+    return stationHistoryService.getFilteredStations(
+      stations,
+      statusFilter,
+      timeFilter,
+      customMinutes,
+      notInUseCount
+    );
+  }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount]);
+
   // Filter regular stations based on custom label selection
   const displayedStations = useMemo(() => {
     if (selectedCustomLabel === '__custom_only__' || (selectedCustomLabel && selectedCustomLabel !== '')) {
@@ -63,6 +74,7 @@ export const CycleMap: React.FC = () => {
     }
     return filteredStations;
   }, [filteredStations, selectedCustomLabel]);
+
   const loadBikePoints = useCallback(async () => {
     try {
       // Don't set loading true for background refreshes
@@ -99,17 +111,6 @@ export const CycleMap: React.FC = () => {
     };
     loadCustomStations();
   }, []);
-
-  // Filter stations based on status history
-  const filteredStations = useMemo(() => {
-    return stationHistoryService.getFilteredStations(
-      stations,
-      statusFilter,
-      timeFilter,
-      customMinutes,
-      notInUseCount
-    );
-  }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount]);
 
   useEffect(() => {
     loadBikePoints();
