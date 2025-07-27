@@ -457,7 +457,13 @@ export const MapControls: React.FC<MapControlsProps> = ({
                       
                       {/* Hide TfL Stations Option */}
                       <button
-                        onClick={handleShowCustomOnly}
+                        onClick={() => {
+                          if (selectedCustomLabels.includes('__custom_only__')) {
+                            onCustomLabelsChange([]);
+                          } else {
+                            onCustomLabelsChange(['__custom_only__']);
+                          }
+                        }}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                       >
                         {selectedCustomLabels.includes('__custom_only__') ? (
@@ -468,28 +474,19 @@ export const MapControls: React.FC<MapControlsProps> = ({
                         Hide TfL Stations (Custom Only)
                       </button>
                       
-                      {/* Custom Only Option */}
+                      {/* Show All Custom Stations Option */}
                       <button
-                        onClick={() => {
-                          if (selectedCustomLabels.includes('__show_all_custom__')) {
-                            // If already selected, clear selection (show only TfL)
-                            onCustomLabelsChange([]);
-                          } else {
-                            // If not selected, show all custom stations
-                            handleShowAllCustomStations();
-                          }
-                        }}
+                        onClick={handleShowAllCustomStations}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                       >
-                        {selectedCustomLabels.includes('__show_all_custom__') ? (
+                        {isAllCustomStationsSelected ? (
                           <CheckSquare className="w-4 h-4 mr-2 text-blue-600" />
                         ) : (
                           <Square className="w-4 h-4 mr-2 text-gray-400" />
                         )}
-                        {selectedCustomLabels.includes('__show_all_custom__') 
-                          ? `Hide All Custom Stations (${customStations.length} hidden)`
-                          : `Show All Custom Stations (${customStations.length} total)`
-                        }
+                        {isAllCustomStationsSelected 
+                          ? `Hide All Custom Stations (${customStations.length} hidden)` 
+                          : `Show All Custom Stations (${customStations.length} total)`}
                       </button>
                       
                       {customLabels.length > 0 && <hr className="my-1" />}
@@ -500,11 +497,16 @@ export const MapControls: React.FC<MapControlsProps> = ({
                       </div>
                       {customLabels.map(label => {
                         const count = customStations.filter(s => s.label === label).length;
-                        const isSelected = selectedCustomLabels.includes(label) && !selectedCustomLabels.includes('__custom_only__');
+                        const isSelected = selectedCustomLabels.includes(label);
                         return (
                           <button
                             key={label}
-                            onClick={() => handleTagToggle(label)}
+                            onClick={() => {
+                              const newLabels = selectedCustomLabels.includes(label)
+                                ? selectedCustomLabels.filter(l => l !== label)
+                                : [...selectedCustomLabels.filter(l => l !== '__custom_only__'), label];
+                              onCustomLabelsChange(newLabels);
+                            }}
                             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between"
                           >
                             <div className="flex items-center">
@@ -528,7 +530,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
                         <>
                           <hr className="my-1" />
                           <button
-                            onClick={handleShowAllStations}
+                            onClick={() => onCustomLabelsChange([])}
                             className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                           >
                             Clear Selection
