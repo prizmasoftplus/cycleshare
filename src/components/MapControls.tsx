@@ -203,6 +203,18 @@ export const MapControls: React.FC<MapControlsProps> = ({
     onCustomLabelsChange(['__custom_only__']);
   };
 
+  const isAllCustomStationsSelected = customLabels.every(label => selectedCustomLabels.includes(label)) && 
+                                     customLabels.length > 0 && 
+                                     !selectedCustomLabels.includes('__custom_only__');
+
+  const handleShowAllCustomStations = () => {
+    if (isAllCustomStationsSelected) {
+      onCustomLabelsChange([]);
+    } else {
+      onCustomLabelsChange(customLabels);
+    }
+  };
+
   return (
     <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col sm:flex-row gap-2">
       {/* Header */}
