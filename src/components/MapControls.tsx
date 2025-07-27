@@ -466,14 +466,14 @@ export const MapControls: React.FC<MapControlsProps> = ({
                         ) : (
                           <Square className="w-4 h-4 mr-2 text-gray-400" />
                         )}
-                        Custom Stations Only ({customStations.length})
+                        Hide TfL Stations ({customStations.length} custom only)
                       </button>
                       
                       {customLabels.length > 0 && <hr className="my-1" />}
                       
                       {/* Individual Tag Options */}
                       <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                        Filter by Tags
+                        Show Custom Tags (+ All TfL Stations)
                       </div>
                       {customLabels.map(label => {
                         const count = customStations.filter(s => s.label === label).length;

@@ -51,8 +51,13 @@ export const CycleMap: React.FC = () => {
 
   // Filter custom stations by selected labels
   const filteredCustomStations = useMemo(() => {
-    if (selectedCustomLabels.length === 0) return customStations;
-    if (selectedCustomLabels.includes('__custom_only__')) return customStations;
+    if (selectedCustomLabels.length === 0) {
+      return customStations; // Show all custom stations
+    }
+    if (selectedCustomLabels.includes('__custom_only__')) {
+      return customStations; // Show all custom stations when "Custom Only" is selected
+    }
+    // Filter by selected labels
     return customStations.filter(station => selectedCustomLabels.includes(station.label));
   }, [customStations, selectedCustomLabels]);
 
@@ -67,12 +72,12 @@ export const CycleMap: React.FC = () => {
     );
   }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount]);
 
-  // Filter regular stations based on custom labels selection
+  // Show TfL stations unless "Custom Only" is explicitly selected
   const displayedStations = useMemo(() => {
-    if (selectedCustomLabels.includes('__custom_only__') || selectedCustomLabels.length > 0) {
-      return []; // Hide all regular TfL stations when showing custom stations only
+    if (selectedCustomLabels.includes('__custom_only__')) {
+      return []; // Hide TfL stations only when "Custom Only" is explicitly selected
     }
-    return filteredStations;
+    return filteredStations; // Always show TfL stations unless "Custom Only" is selected
   }, [filteredStations, selectedCustomLabels]);
 
   const loadBikePoints = useCallback(async () => {
