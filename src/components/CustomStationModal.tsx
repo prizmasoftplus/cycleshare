@@ -197,6 +197,7 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
     setErrors({});
     setGeocodingResult(null);
     setIsGeocoding(false);
+    setShowLabelDropdown(false);
   }, [isOpen, editStation, defaultLat, defaultLng]);
 
   const validateForm = (): boolean => {
