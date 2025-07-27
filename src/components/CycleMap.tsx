@@ -47,14 +47,14 @@ export const CycleMap: React.FC = () => {
   const [customStations, setCustomStations] = useState<CustomStation[]>([]);
   const [isCustomStationModalOpen, setIsCustomStationModalOpen] = useState(false);
   const [editingCustomStation, setEditingCustomStation] = useState<CustomStation | null>(null);
-  const [selectedCustomLabel, setSelectedCustomLabel] = useState('');
+  const [selectedCustomLabels, setSelectedCustomLabels] = useState<string[]>([]);
 
-  // Filter custom stations by selected label
+  // Filter custom stations by selected labels
   const filteredCustomStations = useMemo(() => {
-    if (!selectedCustomLabel) return customStations;
-    if (selectedCustomLabel === '__custom_only__') return customStations;
-    return customStations.filter(station => station.label === selectedCustomLabel);
-  }, [customStations, selectedCustomLabel]);
+    if (selectedCustomLabels.length === 0) return customStations;
+    if (selectedCustomLabels.includes('__custom_only__')) return customStations;
+    return customStations.filter(station => selectedCustomLabels.includes(station.label));
+  }, [customStations, selectedCustomLabels]);
 
   // Filter stations based on status history
   const filteredStations = useMemo(() => {
@@ -67,13 +67,13 @@ export const CycleMap: React.FC = () => {
     );
   }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount]);
 
-  // Filter regular stations based on custom label selection
+  // Filter regular stations based on custom labels selection
   const displayedStations = useMemo(() => {
-    if (selectedCustomLabel === '__custom_only__' || (selectedCustomLabel && selectedCustomLabel !== '')) {
+    if (selectedCustomLabels.includes('__custom_only__') || selectedCustomLabels.length > 0) {
       return []; // Hide all regular TfL stations when showing custom stations only
     }
     return filteredStations;
-  }, [filteredStations, selectedCustomLabel]);
+  }, [filteredStations, selectedCustomLabels]);
 
   const loadBikePoints = useCallback(async () => {
     try {
@@ -311,8 +311,8 @@ export const CycleMap: React.FC = () => {
         notInUseCount={notInUseCount}
         onNotInUseCountChange={setNotInUseCount}
         customStations={customStations}
-        selectedCustomLabel={selectedCustomLabel}
-        onCustomLabelChange={setSelectedCustomLabel}
+        selectedCustomLabels={selectedCustomLabels}
+        onCustomLabelsChange={setSelectedCustomLabels}
       />
 
       {directionsResult && <DirectionsInfo result={directionsResult} onClear={handleClearDirections} />}

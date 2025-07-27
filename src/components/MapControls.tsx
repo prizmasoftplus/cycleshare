@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, RefreshCw, Filter, Info, PenSquare, ChevronDown, Trash2, CheckSquare, Square, Car, Clock, Plus } from 'lucide-react';
+import { Search, RefreshCw, Filter, Info, PenSquare, ChevronDown, Trash2, CheckSquare, Square, Car, Clock, Plus, Tags } from 'lucide-react';
 import { SavedArea } from '../hooks/useAreas';
 import { StatusFilter, TimeFilter } from '../services/stationHistoryService';
 import { StationStats } from '../types/station';
@@ -35,8 +35,8 @@ interface MapControlsProps {
   notInUseCount: number;
   onNotInUseCountChange: (count: number) => void;
   customStations: CustomStation[];
-  selectedCustomLabel: string;
-  onCustomLabelChange: (label: string) => void;
+  selectedCustomLabels: string[];
+  onCustomLabelsChange: (labels: string[]) => void;
 }
 
 export const MapControls: React.FC<MapControlsProps> = ({
@@ -69,13 +69,15 @@ export const MapControls: React.FC<MapControlsProps> = ({
   notInUseCount,
   onNotInUseCountChange,
   customStations,
-  selectedCustomLabel,
-  onCustomLabelChange
+  selectedCustomLabels,
+  onCustomLabelsChange
 }) => {
   const [isAreaMenuOpen, setIsAreaMenuOpen] = useState(false);
   const [isTimeFilterOpen, setIsTimeFilterOpen] = useState(false);
+  const [isTagsMenuOpen, setIsTagsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const timeFilterRef = useRef<HTMLDivElement>(null);
+  const tagsMenuRef = useRef<HTMLDivElement>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -176,12 +178,30 @@ export const MapControls: React.FC<MapControlsProps> = ({
       if (timeFilterRef.current && !timeFilterRef.current.contains(event.target as Node)) {
         setIsTimeFilterOpen(false);
       }
+      if (tagsMenuRef.current && !tagsMenuRef.current.contains(event.target as Node)) {
+        setIsTagsMenuOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const handleTagToggle = (label: string) => {
+    const newLabels = selectedCustomLabels.includes(label)
+      ? selectedCustomLabels.filter(l => l !== label)
+      : [...selectedCustomLabels, label];
+    onCustomLabelsChange(newLabels);
+  };
+
+  const handleShowAllStations = () => {
+    onCustomLabelsChange([]);
+  };
+
+  const handleShowCustomOnly = () => {
+    onCustomLabelsChange(['__custom_only__']);
+  };
 
   return (
     <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col sm:flex-row gap-2">
@@ -395,23 +415,111 @@ export const MapControls: React.FC<MapControlsProps> = ({
             >
               <Plus className="w-5 h-5" />
             </button>
-            {/* Custom Station Label Filter */}
+            {/* Custom Station Tags Filter */}
             {customLabels.length > 0 && (
-              <div className="relative">
-                <select
-                  value={selectedCustomLabel}
-                  onChange={(e) => onCustomLabelChange(e.target.value)}
-                  className="text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px]"
-                  title="Filter custom stations by label"
+              <div className="relative" ref={tagsMenuRef}>
+                <button
+                  onClick={() => setIsTagsMenuOpen(!isTagsMenuOpen)}
+                  className={`p-2 rounded-md transition-colors flex items-center space-x-1 ${
+                    selectedCustomLabels.length > 0 
+                      ? 'bg-blue-100 text-blue-600' 
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                  title="Filter custom stations by tags"
                 >
-                  <option value="">All Stations</option>
-                  <option value="__custom_only__">Custom Only</option>
-                  {customLabels.map(label => (
-                    <option key={label} value={label}>
-                      {label} ({customStations.filter(s => s.label === label).length})
-                    </option>
-                  ))}
-                </select>
+                  <Tags className="w-5 h-5" />
+                  {selectedCustomLabels.length > 0 && (
+                    <span className="text-xs bg-blue-600 text-white rounded-full px-1.5 py-0.5 min-w-[16px] text-center">
+                      {selectedCustomLabels.includes('__custom_only__') ? 'All' : selectedCustomLabels.length}
+                    </span>
+                  )}
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                
+                {isTagsMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-20 border">
+                    <div className="py-1">
+                      <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-200">
+                        Station Visibility
+                      </div>
+                      
+                      {/* All Stations Option */}
+                      <button
+                        onClick={handleShowAllStations}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        {selectedCustomLabels.length === 0 ? (
+                          <CheckSquare className="w-4 h-4 mr-2 text-blue-600" />
+                        ) : (
+                          <Square className="w-4 h-4 mr-2 text-gray-400" />
+                        )}
+                        All Stations (TfL + Custom)
+                      </button>
+                      
+                      {/* Custom Only Option */}
+                      <button
+                        onClick={handleShowCustomOnly}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        {selectedCustomLabels.includes('__custom_only__') ? (
+                          <CheckSquare className="w-4 h-4 mr-2 text-blue-600" />
+                        ) : (
+                          <Square className="w-4 h-4 mr-2 text-gray-400" />
+                        )}
+                        Custom Stations Only ({customStations.length})
+                      </button>
+                      
+                      {customLabels.length > 0 && <hr className="my-1" />}
+                      
+                      {/* Individual Tag Options */}
+                      <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Filter by Tags
+                      </div>
+                      {customLabels.map(label => {
+                        const count = customStations.filter(s => s.label === label).length;
+                        const isSelected = selectedCustomLabels.includes(label) && !selectedCustomLabels.includes('__custom_only__');
+                        return (
+                          <button
+                            key={label}
+                            onClick={() => handleTagToggle(label)}
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between"
+                            disabled={selectedCustomLabels.includes('__custom_only__')}
+                          >
+                            <div className="flex items-center">
+                              {isSelected ? (
+                                <CheckSquare className="w-4 h-4 mr-2 text-blue-600" />
+                              ) : (
+                                <Square className="w-4 h-4 mr-2 text-gray-400" />
+                              )}
+                              <span className={selectedCustomLabels.includes('__custom_only__') ? 'text-gray-400' : ''}>
+                                {label}
+                              </span>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              selectedCustomLabels.includes('__custom_only__') 
+                                ? 'bg-gray-100 text-gray-400' 
+                                : 'bg-blue-100 text-blue-600'
+                            }`}>
+                              {count}
+                            </span>
+                          </button>
+                        );
+                      })}
+                      
+                      {selectedCustomLabels.length > 0 && !selectedCustomLabels.includes('__custom_only__') && (
+                        <>
+                          <hr className="my-1" />
+                          <button
+                            onClick={handleShowAllStations}
+                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                          >
+                            Clear Selection
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             <button
