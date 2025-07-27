@@ -67,7 +67,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
   onAddCustomStation,
   allStations,
   notInUseCount,
-  onNotInUseCountChange
+  onNotInUseCountChange,
   customStations,
   selectedCustomLabel,
   onCustomLabelChange
