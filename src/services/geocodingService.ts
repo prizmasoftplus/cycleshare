@@ -52,6 +52,22 @@ export class GeocodingService {
   // Fallback method using a simple coordinate mapping for common London areas
   getFallbackCoordinates(stationName: string): { lat: number; lng: number; area: string } | null {
     const londonAreas = {
+      // Specific streets and locations
+      'park street': { lat: 51.5075, lng: -0.0952, area: 'Bankside' },
+      'brunswick square': { lat: 51.5235, lng: -0.1244, area: 'Bloomsbury' },
+      'malet street': { lat: 51.5218, lng: -0.1301, area: 'Bloomsbury' },
+      'scala street': { lat: 51.5186, lng: -0.1350, area: 'Fitzrovia' },
+      'argyle street': { lat: 51.5320, lng: -0.1233, area: 'Kings Cross' },
+      'great russell street': { lat: 51.5190, lng: -0.1280, area: 'Bloomsbury' },
+      'cartwright gardens': { lat: 51.5250, lng: -0.1220, area: 'Bloomsbury' },
+      'hatton wall': { lat: 51.5174, lng: -0.1100, area: 'Holborn' },
+      'drury lane': { lat: 51.5124, lng: -0.1223, area: 'Covent Garden' },
+      
+      // Areas
+      'bankside': { lat: 51.5085, lng: -0.0972, area: 'Bankside' },
+      'fitzrovia': { lat: 51.5186, lng: -0.1350, area: 'Fitzrovia' },
+      'holborn': { lat: 51.5174, lng: -0.1200, area: 'Holborn' },
+      
       'clerkenwell': { lat: 51.5267, lng: -0.1067, area: 'Clerkenwell' },
       'kensington': { lat: 51.5025, lng: -0.2017, area: 'Kensington' },
       'liverpool street': { lat: 51.5185, lng: -0.0816, area: 'Liverpool Street' },

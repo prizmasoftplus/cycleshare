@@ -263,15 +263,35 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
       
       const stations: CustomStation[] = [];
       
-      names.forEach((stationName, index) => {
-        // Slightly offset each station by a small amount to avoid overlap
-        const offsetLat = finalLat + (index * 0.0001);
-        const offsetLng = finalLng + (index * 0.0001);
+      names.forEach((stationName) => {
+        let stationLat = finalLat;
+        let stationLng = finalLng;
+        
+        // Try to geocode each station individually if not using default coordinates
+        if (!useDefaultCoordinates) {
+          // First try predefined stations
+          const predefined = PREDEFINED_STATIONS.find(s => 
+            s.name.toLowerCase().includes(stationName.toLowerCase()) ||
+            stationName.toLowerCase().includes(s.name.toLowerCase())
+          );
+          
+          if (predefined) {
+            stationLat = predefined.lat;
+            stationLng = predefined.lng;
+          } else {
+            // Try fallback geocoding
+            const fallback = geocodingService.getFallbackCoordinates(stationName);
+            if (fallback) {
+              stationLat = fallback.lat;
+              stationLng = fallback.lng;
+            }
+          }
+        }
         
         const stationData = {
           name: stationName,
-          lat: offsetLat,
-          lng: offsetLng,
+          lat: stationLat,
+          lng: stationLng,
           color,
           label: label.trim(),
           description: description.trim() || undefined,
@@ -473,7 +493,7 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
                 disabled={isMultipleMode}
               />
               <label htmlFor="useDefaultCoords" className="text-sm font-medium text-gray-700">
-                {isMultipleMode ? 'Multiple stations will use default coordinates (Central London)' : 'Use default coordinates (Central London)'}
+                {isMultipleMode ? 'Use default coordinates for all stations (Central London)' : 'Use default coordinates (Central London)'}
               </label>
             </div>
             
@@ -516,7 +536,10 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
             
             {isMultipleMode && (
               <div className="text-xs text-gray-500 bg-blue-50 p-2 rounded">
-                <strong>Note:</strong> All stations will be placed at the same coordinates with slight offsets to prevent overlap. You can edit individual stations later to set specific locations.
+                <strong>Note:</strong> {useDefaultCoordinates 
+                  ? 'All stations will be placed at default coordinates (Central London). Uncheck the box above to enable automatic coordinate detection for each station name.'
+                  : 'Each station will be automatically positioned based on its name. If a location cannot be found, it will use the coordinates you specified above.'
+                }
               </div>
             )}
           </div>
