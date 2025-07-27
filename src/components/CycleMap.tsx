@@ -283,7 +283,7 @@ export const CycleMap: React.FC = () => {
       <MapControls
         onRefresh={loadBikePoints}
         isLoading={isLoading}
-        totalStations={filteredStations.length}
+        totalStations={displayedStations.length + filteredCustomStations.length}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         showFilter={showFilter}
