@@ -133,7 +133,7 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
 
   // Auto-geocode when station name changes (for single station mode)
   useEffect(() => {
-    if (!isMultipleMode && name.trim() && !editStation) {
+    if (!isMultipleMode && name.trim() && !editStation && name.length > 2) {
       const timeoutId = setTimeout(async () => {
         setIsGeocoding(true);
         setGeocodingResult(null);
@@ -165,7 +165,7 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
         }
         
         setIsGeocoding(false);
-      }, 1000); // Debounce for 1 second
+      }, 800); // Debounce for 800ms
       
       return () => clearTimeout(timeoutId);
     }
@@ -193,6 +193,8 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
       setUseDefaultCoordinates(true);
     }
     setErrors({});
+    setGeocodingResult(null);
+    setIsGeocoding(false);
   }, [isOpen, editStation, defaultLat, defaultLng]);
 
   const validateForm = (): boolean => {
@@ -205,6 +207,8 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
         const names = multipleNames.split('\n').filter(n => n.trim());
         if (names.length === 0) {
           newErrors.multipleNames = 'At least one station name is required';
+        } else if (names.length > 20) {
+          newErrors.multipleNames = 'Maximum 20 stations can be added at once';
         }
       }
     } else {
@@ -213,7 +217,7 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
       }
     }
 
-    if (!useDefaultCoordinates) {
+    if (!useDefaultCoordinates && !isMultipleMode) {
       if (lat < -90 || lat > 90) {
         newErrors.lat = 'Latitude must be between -90 and 90';
       }
@@ -262,18 +266,19 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
         const offsetLat = finalLat + (index * 0.0001);
         const offsetLng = finalLng + (index * 0.0001);
         
-        return customStationsService.addCustomStation({
+        const stationData = {
           name: stationName,
           lat: offsetLat,
           lng: offsetLng,
           color,
           label: label.trim(),
           description: description.trim() || undefined,
-        });
+        };
+        
+        return customStationsService.addCustomStation(stationData);
       });
       
       onSaveMultiple(stations);
-      onClose();
     } else {
       const stationData = {
         name: name.trim(),
@@ -288,14 +293,14 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
         const updated = customStationsService.updateCustomStation(editStation.id, stationData);
         if (updated) {
           onSave({ ...editStation, ...stationData });
-          onClose();
         }
       } else {
         const newStation = customStationsService.addCustomStation(stationData);
         onSave(newStation);
-        onClose();
       }
     }
+    
+    onClose();
   };
 
   const handleClearAll = () => {
@@ -454,7 +459,7 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
           )}
 
           {/* Coordinates Section */}
-          <div className="space-y-3">
+          <div className={`space-y-3 ${isMultipleMode ? 'opacity-75' : ''}`}>
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -462,13 +467,14 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
                 checked={useDefaultCoordinates}
                 onChange={(e) => setUseDefaultCoordinates(e.target.checked)}
                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                disabled={isMultipleMode}
               />
               <label htmlFor="useDefaultCoords" className="text-sm font-medium text-gray-700">
-                Use default coordinates (Central London)
+                {isMultipleMode ? 'Multiple stations will use default coordinates (Central London)' : 'Use default coordinates (Central London)'}
               </label>
             </div>
             
-            {!useDefaultCoordinates && (
+            {!useDefaultCoordinates && !isMultipleMode && (
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -502,6 +508,12 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
                   />
                   {errors.lng && <p className="text-red-500 text-xs mt-1">{errors.lng}</p>}
                 </div>
+              </div>
+            )}
+            
+            {isMultipleMode && (
+              <div className="text-xs text-gray-500 bg-blue-50 p-2 rounded">
+                <strong>Note:</strong> All stations will be placed at the same coordinates with slight offsets to prevent overlap. You can edit individual stations later to set specific locations.
               </div>
             )}
           </div>

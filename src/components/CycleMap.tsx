@@ -152,7 +152,17 @@ export const CycleMap: React.FC = () => {
   };
 
   const handleCustomStationsSaveMultiple = (stations: CustomStation[]) => {
-    setCustomStations(prev => [...prev, ...stations]);
+    setCustomStations(prev => {
+      // Create a map of existing stations by ID to avoid duplicates
+      const existingMap = new Map(prev.map(s => [s.id, s]));
+      
+      // Add new stations, replacing any with the same ID
+      stations.forEach(station => {
+        existingMap.set(station.id, station);
+      });
+      
+      return Array.from(existingMap.values());
+    });
   };
 
   const handleClearAllCustomStations = () => {
