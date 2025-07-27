@@ -261,7 +261,9 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
         .map(n => n.trim())
         .filter(n => n.length > 0);
       
-      const stations: CustomStation[] = names.map((stationName, index) => {
+      const stations: CustomStation[] = [];
+      
+      names.forEach((stationName, index) => {
         // Slightly offset each station by a small amount to avoid overlap
         const offsetLat = finalLat + (index * 0.0001);
         const offsetLng = finalLng + (index * 0.0001);
@@ -275,7 +277,8 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
           description: description.trim() || undefined,
         };
         
-        return customStationsService.addCustomStation(stationData);
+        const newStation = customStationsService.addCustomStation(stationData);
+        stations.push(newStation);
       });
       
       onSaveMultiple(stations);
