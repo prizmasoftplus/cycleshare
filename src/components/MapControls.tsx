@@ -443,19 +443,6 @@ export const MapControls: React.FC<MapControlsProps> = ({
                         Station Visibility
                       </div>
                       
-                      {/* All Stations Option */}
-                      <button
-                        onClick={handleShowAllStations}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                      >
-                        {selectedCustomLabels.length === 0 ? (
-                          <CheckSquare className="w-4 h-4 mr-2 text-blue-600" />
-                        ) : (
-                          <Square className="w-4 h-4 mr-2 text-gray-400" />
-                        )}
-                        All Stations (TfL + Custom)
-                      </button>
-                      
                       {/* Custom Only Option */}
                       <button
                         onClick={handleShowCustomOnly}
@@ -466,14 +453,14 @@ export const MapControls: React.FC<MapControlsProps> = ({
                         ) : (
                           <Square className="w-4 h-4 mr-2 text-gray-400" />
                         )}
-                        Hide TfL Stations ({customStations.length} custom only)
+                        Show All Custom Stations ({customStations.length} custom only)
                       </button>
                       
                       {customLabels.length > 0 && <hr className="my-1" />}
                       
                       {/* Individual Tag Options */}
                       <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wide">
-                        Show Custom Tags (+ All TfL Stations)
+                        Select Custom Tags to Show
                       </div>
                       {customLabels.map(label => {
                         const count = customStations.filter(s => s.label === label).length;

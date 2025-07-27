@@ -52,7 +52,7 @@ export const CycleMap: React.FC = () => {
   // Filter custom stations by selected labels
   const filteredCustomStations = useMemo(() => {
     if (selectedCustomLabels.length === 0) {
-      return customStations; // Show all custom stations
+      return []; // Hide all custom stations when no tags selected
     }
     if (selectedCustomLabels.includes('__custom_only__')) {
       return customStations; // Show all custom stations when "Custom Only" is selected
