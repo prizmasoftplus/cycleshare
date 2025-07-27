@@ -455,6 +455,19 @@ export const MapControls: React.FC<MapControlsProps> = ({
                         Station Visibility
                       </div>
                       
+                      {/* Hide TfL Stations Option */}
+                      <button
+                        onClick={handleShowCustomOnly}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        {selectedCustomLabels.includes('__custom_only__') ? (
+                          <CheckSquare className="w-4 h-4 mr-2 text-blue-600" />
+                        ) : (
+                          <Square className="w-4 h-4 mr-2 text-gray-400" />
+                        )}
+                        Hide TfL Stations (Custom Only)
+                      </button>
+                      
                       {/* Custom Only Option */}
                       <button
                         onClick={() => {
