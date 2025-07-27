@@ -53,6 +53,12 @@ export class GeocodingService {
   getFallbackCoordinates(stationName: string): { lat: number; lng: number; area: string } | null {
     const londonAreas = {
       // Specific streets and locations
+      'westbourne grove': { lat: 51.5126, lng: -0.1879, area: 'Bayswater' },
+      'woodstock street': { lat: 51.5100, lng: -0.1450, area: 'Mayfair' },
+      'finsbury leisure centre': { lat: 51.5267, lng: -0.1067, area: 'St. Luke\'s' },
+      'soho square': { lat: 51.5130, lng: -0.1320, area: 'Soho' },
+      'wellington road': { lat: 51.5325, lng: -0.1687, area: 'St. John\'s Wood' },
+      'park lane': { lat: 51.5074, lng: -0.1533, area: 'Hyde Park' },
       'park street': { lat: 51.5075, lng: -0.0952, area: 'Bankside' },
       'brunswick square': { lat: 51.5235, lng: -0.1244, area: 'Bloomsbury' },
       'malet street': { lat: 51.5218, lng: -0.1301, area: 'Bloomsbury' },

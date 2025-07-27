@@ -272,10 +272,6 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
   const handleSave = () => {
     if (!validateForm()) return;
 
-    // Use default coordinates if checkbox is checked
-    const finalLat = useDefaultCoordinates ? 51.5074 : lat;
-    const finalLng = useDefaultCoordinates ? -0.1278 : lng;
-
     if (isMultipleMode && onSaveMultiple) {
       const names = multipleNames.split('\n')
         .map(n => n.trim())
@@ -284,11 +280,30 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
       const stations: CustomStation[] = [];
       
       names.forEach((stationName) => {
-        let stationLat = finalLat;
-        let stationLng = finalLng;
+        let stationLat = 51.5074; // Default London coordinates
+        let stationLng = -0.1278;
         
-        // Try to geocode each station individually if not using default coordinates
+        // Always try to geocode each station individually unless using default coordinates
         if (!useDefaultCoordinates) {
+          // First try predefined stations
+          const predefined = PREDEFINED_STATIONS.find(s => 
+            s.name.toLowerCase().includes(stationName.toLowerCase()) ||
+            stationName.toLowerCase().includes(s.name.toLowerCase())
+          );
+          
+          if (predefined) {
+            stationLat = predefined.lat;
+            stationLng = predefined.lng;
+          } else {
+            // Try fallback geocoding
+            const fallback = geocodingService.getFallbackCoordinates(stationName);
+            if (fallback) {
+              stationLat = fallback.lat;
+              stationLng = fallback.lng;
+            }
+          }
+        } else {
+          // Even when using default coordinates, try to find specific locations
           // First try predefined stations
           const predefined = PREDEFINED_STATIONS.find(s => 
             s.name.toLowerCase().includes(stationName.toLowerCase()) ||
@@ -323,6 +338,10 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
       
       onSaveMultiple(stations);
     } else {
+      // Use default coordinates if checkbox is checked for single station mode
+      const finalLat = useDefaultCoordinates ? 51.5074 : lat;
+      const finalLng = useDefaultCoordinates ? -0.1278 : lng;
+      
       const stationData = {
         name: name.trim(),
         lat: finalLat,
