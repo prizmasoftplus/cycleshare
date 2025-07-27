@@ -133,6 +133,23 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
     station.area.toLowerCase().includes(predefinedSearchTerm.toLowerCase())
   );
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showPredefinedStations) {
+        setShowPredefinedStations(false);
+      }
+      if (showLabelDropdown) {
+        setShowLabelDropdown(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showPredefinedStations, showLabelDropdown]);
+
   // Auto-geocode when station name changes (for single station mode)
   useEffect(() => {
     if (!isMultipleMode && name.trim() && !editStation && name.length > 2) {
@@ -675,4 +692,4 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
       </div>
     </div>
   );
-}; 
+};
