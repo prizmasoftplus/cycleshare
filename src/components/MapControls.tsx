@@ -228,17 +228,6 @@ export const MapControls: React.FC<MapControlsProps> = ({
             {/* Status Filter Buttons */}
             <div className="flex gap-1 relative" ref={timeFilterRef}>
               <button
-                onClick={() => handleStatusFilterClick('empty')}
-                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                  statusFilter === 'empty' 
-                    ? 'bg-red-100 text-red-700 border border-red-300' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                title="Show completely empty stations"
-              >
-                Empty ({getFilterCount('empty')})
-              </button>
-              <button
                 onClick={() => handleStatusFilterClick('full')}
                 className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
                   statusFilter === 'full' 
@@ -248,17 +237,6 @@ export const MapControls: React.FC<MapControlsProps> = ({
                 title="Show completely full stations"
               >
                 Full ({getFilterCount('full')})
-              </button>
-              <button
-                onClick={() => handleStatusFilterClick('75empty')}
-                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                  statusFilter === '75empty' 
-                    ? 'bg-red-100 text-red-700 border border-red-300' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                title="Show 75% empty stations"
-              >
-                75% Empty ({getFilterCount('75empty')})
               </button>
               <button
                 onClick={() => handleStatusFilterClick('75full')}
@@ -272,17 +250,6 @@ export const MapControls: React.FC<MapControlsProps> = ({
                 75% Full ({getFilterCount('75full')})
               </button>
               <button
-                onClick={() => handleStatusFilterClick('50empty')}
-                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                  statusFilter === '50empty' 
-                    ? 'bg-red-100 text-red-700 border border-red-300' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                title="Show 50% empty stations"
-              >
-                50% Empty ({getFilterCount('50empty')})
-              </button>
-              <button
                 onClick={() => handleStatusFilterClick('50full')}
                 className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
                   statusFilter === '50full' 
@@ -292,6 +259,39 @@ export const MapControls: React.FC<MapControlsProps> = ({
                 title="Show 50% full stations"
               >
                 50% Full ({getFilterCount('50full')})
+              </button>
+              <button
+                onClick={() => handleStatusFilterClick('empty')}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors border ${
+                  statusFilter === 'empty' 
+                    ? 'bg-red-100 text-red-700 border-red-300' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300'
+                }`}
+                title="Show completely empty stations"
+              >
+                Empty ({getFilterCount('empty')})
+              </button>
+              <button
+                onClick={() => handleStatusFilterClick('75empty')}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors border ${
+                  statusFilter === '75empty' 
+                    ? 'bg-red-100 text-red-700 border-red-300' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300'
+                }`}
+                title="Show 75% empty stations"
+              >
+                75% Empty ({getFilterCount('75empty')})
+              </button>
+              <button
+                onClick={() => handleStatusFilterClick('50empty')}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors border ${
+                  statusFilter === '50empty' 
+                    ? 'bg-red-100 text-red-700 border-red-300' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300'
+                }`}
+                title="Show 50% empty stations"
+              >
+                50% Empty ({getFilterCount('50empty')})
               </button>
               <button
                 onClick={() => handleStatusFilterClick('notinuse_count')}
