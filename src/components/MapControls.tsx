@@ -582,7 +582,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             onFocus={() => setShowSuggestions(suggestions.length > 0)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className="w-full pl-10 pr-4 py-2 border-2 border-blue-500 rounded-md focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm"
             autoComplete="off"
           />
           {showSuggestions && (
