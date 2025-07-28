@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { X, MapPin, Clock, Bike, ParkingCircle, AlertCircle, Star, Navigation, Image as ImageIcon } from 'lucide-react';
+import { X, MapPin, Clock, Bike, ParkingCircle, AlertCircle, Star, Image as ImageIcon } from 'lucide-react';
 import { StationStats } from '../types/station';
 import { priorityLevels, PriorityLevel } from '../hooks/usePriorities';
 import { imageService, LocationImage } from '../services/imageService';
@@ -9,13 +9,12 @@ interface StationModalProps {
   onClose: () => void;
   isFavorite: boolean;
   onToggleFavorite: () => void;
-  onGetDirections: () => void;
   priority: PriorityLevel;
   onSetPriority: (level: PriorityLevel) => void;
   lastApiUpdate: Date | null;
 }
 
-export const StationModal: React.FC<StationModalProps> = ({ station, onClose, isFavorite, onToggleFavorite, onGetDirections, priority, onSetPriority, lastApiUpdate }) => {
+export const StationModal: React.FC<StationModalProps> = ({ station, onClose, isFavorite, onToggleFavorite, priority, onSetPriority, lastApiUpdate }) => {
   const [locationImage, setLocationImage] = useState<LocationImage | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -400,15 +399,6 @@ export const StationModal: React.FC<StationModalProps> = ({ station, onClose, is
           </div>
         </div>
         
-        <div className="border-t border-gray-200 p-4 bg-gray-50">
-           <button
-            onClick={onGetDirections}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
-          >
-            <Navigation className="w-5 h-5" />
-            <span>Get Directions From Here</span>
-          </button>
-        </div>
       </div>
     </div>
   );

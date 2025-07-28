@@ -6,7 +6,6 @@ import { CustomStationModal } from './CustomStationModal';
 import { tflApi } from '../services/tflApi';
 import { BikePoint, StationStats } from '../types/station';
 import { useFavorites } from '../hooks/useFavorites';
-import { DirectionsInfo } from './DirectionsInfo';
 import { useAreas, SavedArea } from '../hooks/useAreas';
 import { usePriorities, PriorityLevel } from '../hooks/usePriorities';
 import { stationHistoryService, StatusFilter, TimeFilter } from '../services/stationHistoryService';
@@ -23,11 +22,6 @@ export const CycleMap: React.FC = () => {
   const [showFilter, setShowFilter] = useState(false);
   const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
 
-  // State for directions feature
-  const [origin, setOrigin] = useState<StationStats | null>(null);
-  const [destination, setDestination] = useState<StationStats | null>(null);
-  const [directionsResult, setDirectionsResult] = useState<google.maps.DirectionsResult | null>(null);
-  
   // State for drawing feature
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [activeAreas, setActiveAreas] = useState<SavedArea[]>([]);
@@ -147,33 +141,7 @@ export const CycleMap: React.FC = () => {
   }, []);
 
   const handleStationClick = (station: StationStats) => {
-    console.log('Station clicked:', station.name);
-    console.log('Current directions state:', { 
-      hasOrigin: !!origin, 
-      hasDestination: !!destination,
-      originName: origin?.name,
-      destinationName: destination?.name 
-    });
-    
-    // If we're in directions mode (origin is set but no destination)
-    if (origin && !destination) {
-      if (origin.id === station.id) {
-        // Clicking the same station - just open the modal
-        console.log('Clicking same origin station, opening modal');
-        setSelectedStation(station);
-      } else {
-        // Different station - set as destination
-        console.log('DIRECTIONS MODE: Setting destination:', station.name);
-        console.log('DIRECTIONS MODE: Route from:', origin.name, 'to:', station.name);
-        setDestination(station);
-        // Don't open the modal when setting destination
-        return;
-      }
-    } else {
-      // Normal mode - just open the station modal
-      console.log('Normal mode - opening station modal for:', station.name);
-      setSelectedStation(station);
-    }
+    setSelectedStation(station);
   };
 
   const handleCustomStationClick = (station: CustomStation) => {
@@ -221,24 +189,6 @@ export const CycleMap: React.FC = () => {
 
   const handleCloseModal = () => {
     setSelectedStation(null);
-  };
-
-  const handleGetDirectionsClick = () => {
-    if (!selectedStation) return;
-    console.log('Setting origin:', selectedStation.name);
-    console.log('Current state before setting origin:', { origin: origin?.name, destination: destination?.name });
-    setOrigin(selectedStation);
-    setDestination(null);
-    setDirectionsResult(null);
-    setSelectedStation(null); // Close modal and enter directions mode
-    console.log('Entered directions mode with origin:', selectedStation.name);
-  };
-
-  const handleClearDirections = () => {
-    console.log('Clearing directions');
-    setOrigin(null);
-    setDestination(null);
-    setDirectionsResult(null);
   };
 
   const handleToggleDrawingMode = () => {
@@ -302,9 +252,6 @@ export const CycleMap: React.FC = () => {
         onStationClick={handleStationClick}
         searchTerm={searchTerm}
         favoriteIds={favoriteIds}
-        origin={origin}
-        destination={destination}
-        onDirectionsResult={setDirectionsResult}
         isDrawingMode={isDrawingMode}
         activeAreas={activeAreas}
         onPolygonComplete={handlePolygonComplete}
@@ -348,31 +295,11 @@ export const CycleMap: React.FC = () => {
         onCustomLabelsChange={setSelectedCustomLabels}
       />
 
-      {/* Directions Mode Indicator */}
-      {origin && !destination && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg border-2 border-white animate-pulse">
-          <p className="text-sm font-medium">
-            🚴‍♂️ Origin: <strong>{origin.name}</strong>
-          </p>
-          <p className="text-xs opacity-90 text-center mt-1">👆 Click another station for destination</p>
-          <button
-            onClick={handleClearDirections}
-            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm hover:bg-red-600 transition-colors font-bold"
-            title="Cancel directions"
-          >
-            ×
-          </button>
-        </div>
-      )}
-
-      {directionsResult && <DirectionsInfo result={directionsResult} onClear={handleClearDirections} />}
-
       <StationModal
         station={selectedStation}
         onClose={handleCloseModal}
         isFavorite={isFavorite(selectedStation?.id || '')}
         onToggleFavorite={() => toggleFavorite(selectedStation?.id || '')}
-        onGetDirections={handleGetDirectionsClick}
         priority={getStationPriority(selectedStation?.id || '')}
         onSetPriority={(level: PriorityLevel) => setStationPriority(selectedStation?.id || '', level)}
         lastApiUpdate={lastApiUpdate}

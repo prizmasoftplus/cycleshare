@@ -10,9 +10,6 @@ interface GoogleMapProps {
   onStationClick: (station: StationStats) => void;
   searchTerm: string;
   favoriteIds: string[];
-  origin: StationStats | null;
-  destination: StationStats | null;
-  onDirectionsResult: (result: google.maps.DirectionsResult) => void;
   isDrawingMode: boolean;
   activeAreas: SavedArea[];
   onPolygonComplete: (path: google.maps.LatLng[]) => void;
@@ -72,7 +69,7 @@ const ErrorElement = ({ apiKey }: { apiKey: string }) => (
   </div>
 );
 
-function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destination, onDirectionsResult, isDrawingMode, activeAreas, onPolygonComplete, priorities, showTraffic, customStations, onCustomStationClick }: GoogleMapProps) {
+function Map({ stations, onStationClick, searchTerm, favoriteIds, isDrawingMode, activeAreas, onPolygonComplete, priorities, showTraffic, customStations, onCustomStationClick }: GoogleMapProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
@@ -171,7 +168,6 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
       });
       directionsRendererRef.current = new google.maps.DirectionsRenderer();
       directionsRendererRef.current.setMap(googleMapRef.current);
-
       // Initialize traffic layer
       trafficLayerRef.current = new google.maps.TrafficLayer();
       trafficLayerRef.current.setMap(googleMapRef.current);
@@ -239,53 +235,6 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
       });
     }
   }, [activeAreas]);
-
-  // Handle directions request
-  useEffect(() => {
-    console.log('Directions effect triggered:', { origin: origin?.name, destination: destination?.name });
-    
-    if (!origin || !destination || !googleMapRef.current || !directionsRendererRef.current) {
-      // Clear previous routes when no origin/destination
-      if (directionsRendererRef.current && (!origin || !destination)) {
-        console.log('Clearing directions display');
-        directionsRendererRef.current.setDirections({ routes: [] } as google.maps.DirectionsResult);
-      }
-      return;
-    }
-
-    const directionsService = new google.maps.DirectionsService();
-    
-    const getLatLng = (station: StationStats) => {
-      const parts = station.id.split('_');
-      const lat = parseFloat(parts[parts.length - 2]);
-      const lng = parseFloat(parts[parts.length - 1]);
-      console.log('Station coordinates:', station.name, { lat, lng });
-      return { lat, lng };
-    };
-
-    console.log('🗺️ REQUESTING DIRECTIONS from', origin.name, 'to', destination.name);
-    directionsService.route(
-      {
-        origin: getLatLng(origin),
-        destination: getLatLng(destination),
-        travelMode: google.maps.TravelMode.BICYCLING, // Changed to bicycling for bike routes
-      },
-      (result, status) => {
-        console.log('🗺️ DIRECTIONS RESULT:', status);
-        if (status === google.maps.DirectionsStatus.OK && result) {
-          directionsRendererRef.current?.setDirections(result);
-          onDirectionsResult(result);
-          console.log('✅ Directions successfully displayed');
-        } else {
-          console.error(`❌ Error fetching directions: ${status}`);
-          // Clear any existing directions on error
-          if (directionsRendererRef.current) {
-            directionsRendererRef.current.setDirections({ routes: [] } as google.maps.DirectionsResult);
-          }
-        }
-      }
-    );
-  }, [origin, destination, onDirectionsResult]);
 
   // Update markers
   useEffect(() => {
@@ -389,7 +338,7 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
     }
     markersMapRef.current = newMarkers;
     prevStationsRef.current = stations;
-  }, [stations, searchTerm, onStationClick, favoriteIds, origin, priorities]);
+  }, [stations, searchTerm, onStationClick, favoriteIds, priorities]);
 
   // Update custom station markers
   useEffect(() => {
