@@ -147,6 +147,14 @@ export const CycleMap: React.FC = () => {
   }, []);
 
   const handleStationClick = (station: StationStats) => {
+    console.log('Station clicked:', station.name);
+    console.log('Current directions state:', { 
+      hasOrigin: !!origin, 
+      hasDestination: !!destination,
+      originName: origin?.name,
+      destinationName: destination?.name 
+    });
+    
     // If we're in directions mode (origin is set but no destination)
     if (origin && !destination) {
       if (origin.id === station.id) {
@@ -155,9 +163,11 @@ export const CycleMap: React.FC = () => {
         setSelectedStation(station);
       } else {
         // Different station - set as destination
-        console.log('Setting destination:', station.name);
-        console.log('Route from:', origin.name, 'to:', station.name);
+        console.log('DIRECTIONS MODE: Setting destination:', station.name);
+        console.log('DIRECTIONS MODE: Route from:', origin.name, 'to:', station.name);
         setDestination(station);
+        // Don't open the modal when setting destination
+        return;
       }
     } else {
       // Normal mode - just open the station modal
@@ -340,14 +350,14 @@ export const CycleMap: React.FC = () => {
 
       {/* Directions Mode Indicator */}
       {origin && !destination && (
-        <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg border-2 border-white">
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg border-2 border-white animate-pulse">
           <p className="text-sm font-medium">
-            📍 Origin set: <strong>{origin.name}</strong>
+            🚴‍♂️ Origin: <strong>{origin.name}</strong>
           </p>
-          <p className="text-xs opacity-90 text-center mt-1">Click another station to set destination</p>
+          <p className="text-xs opacity-90 text-center mt-1">👆 Click another station for destination</p>
           <button
             onClick={handleClearDirections}
-            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm hover:bg-red-600 transition-colors font-bold"
             title="Cancel directions"
           >
             ×

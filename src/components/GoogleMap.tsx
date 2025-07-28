@@ -247,6 +247,7 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
     if (!origin || !destination || !googleMapRef.current || !directionsRendererRef.current) {
       // Clear previous routes when no origin/destination
       if (directionsRendererRef.current && (!origin || !destination)) {
+        console.log('Clearing directions display');
         directionsRendererRef.current.setDirections({ routes: [] } as google.maps.DirectionsResult);
       }
       return;
@@ -262,7 +263,7 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
       return { lat, lng };
     };
 
-    console.log('Requesting directions from', origin.name, 'to', destination.name);
+    console.log('🗺️ REQUESTING DIRECTIONS from', origin.name, 'to', destination.name);
     directionsService.route(
       {
         origin: getLatLng(origin),
@@ -270,13 +271,13 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
         travelMode: google.maps.TravelMode.BICYCLING, // Changed to bicycling for bike routes
       },
       (result, status) => {
-        console.log('Directions result:', status, result);
+        console.log('🗺️ DIRECTIONS RESULT:', status);
         if (status === google.maps.DirectionsStatus.OK && result) {
           directionsRendererRef.current?.setDirections(result);
           onDirectionsResult(result);
-          console.log('Directions successfully displayed');
+          console.log('✅ Directions successfully displayed');
         } else {
-          console.error(`Error fetching directions: ${status}`, result);
+          console.error(`❌ Error fetching directions: ${status}`);
           // Clear any existing directions on error
           if (directionsRendererRef.current) {
             directionsRendererRef.current.setDirections({ routes: [] } as google.maps.DirectionsResult);
