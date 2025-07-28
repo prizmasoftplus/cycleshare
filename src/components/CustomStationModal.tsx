@@ -123,6 +123,9 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
   const [predefinedSearchTerm, setPredefinedSearchTerm] = useState('');
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [geocodingResult, setGeocodingResult] = useState<{ lat: number; lng: number; area: string } | null>(null);
+  const [searchResults, setSearchResults] = useState<PredefinedStation[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [selectedStationsForAdd, setSelectedStationsForAdd] = useState<Set<string>>(new Set());
 
   const colorOptions = customStationsService.getColorOptions();
   const usedLabels = customStationsService.getUsedLabels();
@@ -133,6 +136,31 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
     station.area.toLowerCase().includes(predefinedSearchTerm.toLowerCase())
   );
 
+  // Enhanced search for multiple mode
+  const enhancedSearchResults = useMemo(() => {
+    if (!isMultipleMode || multipleNames.length < 2) return [];
+    
+    const searchTerms = multipleNames.split('\n')
+      .map(term => term.trim().toLowerCase())
+      .filter(term => term.length > 0);
+    
+    const results: { term: string; matches: PredefinedStation[] }[] = [];
+    
+    searchTerms.forEach(term => {
+      const matches = PREDEFINED_STATIONS.filter(station =>
+        station.name.toLowerCase().includes(term) ||
+        station.area.toLowerCase().includes(term) ||
+        term.includes(station.name.toLowerCase()) ||
+        term.includes(station.area.toLowerCase())
+      ).slice(0, 3); // Limit to 3 matches per term
+      
+      if (matches.length > 0) {
+        results.push({ term, matches });
+      }
+    });
+    
+    return results;
+  }, [multipleNames, isMultipleMode]);
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -215,6 +243,39 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
     setGeocodingResult(null);
     setIsGeocoding(false);
     setShowLabelDropdown(false);
+  const handleBulkAddFromSearch = () => {
+    const stationsToAdd = Array.from(selectedStationsForAdd)
+      .map(stationName => PREDEFINED_STATIONS.find(s => s.name === stationName))
+      .filter(Boolean) as PredefinedStation[];
+    
+    if (stationsToAdd.length === 0) return;
+    
+    const stationNames = stationsToAdd.map(s => s.name).join('\n');
+    setMultipleNames(prev => {
+      const existing = prev.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+      const newNames = stationsToAdd.map(s => s.name).filter(name => !existing.includes(name));
+      return [...existing, ...newNames].join('\n');
+    });
+    
+    setSelectedStationsForAdd(new Set());
+    setShowSearchResults(false);
+  };
+
+  const handleToggleStationSelection = (stationName: string) => {
+    setSelectedStationsForAdd(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(stationName)) {
+        newSet.delete(stationName);
+      } else {
+        newSet.add(stationName);
+      }
+      return newSet;
+    });
+  };
+
+    setSearchResults([]);
+    setShowSearchResults(false);
+    setSelectedStationsForAdd(new Set());
   }, [isOpen, editStation, defaultLat, defaultLng]);
 
   const validateForm = (): boolean => {
@@ -450,6 +511,44 @@ export const CustomStationModal: React.FC<CustomStationModalProps> = ({
               <p className="text-xs text-gray-500 mt-1">
                 Each line will create a separate station with the same coordinates, color, and label
               </p>
+              
+              {/* Enhanced Search Results for Multiple Mode */}
+              {isMultipleMode && enhancedSearchResults.length > 0 && (
+                <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-medium text-blue-900">Found Matching Stations</h4>
+                    {selectedStationsForAdd.size > 0 && (
+                      <button
+                        onClick={handleBulkAddFromSearch}
+                        className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+                      >
+                        Add Selected ({selectedStationsForAdd.size})
+                      </button>
+                    )}
+                  </div>
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                    {enhancedSearchResults.map(({ term, matches }) => (
+                      <div key={term} className="text-xs">
+                        <div className="font-medium text-blue-800 mb-1">"{term}" matches:</div>
+                        <div className="space-y-1 ml-2">
+                          {matches.map(station => (
+                            <label key={station.name} className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={selectedStationsForAdd.has(station.name)}
+                                onChange={() => handleToggleStationSelection(station.name)}
+                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              />
+                              <span className="text-gray-700">{station.name}</span>
+                              <span className="text-gray-500">({station.area})</span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div>
