@@ -64,7 +64,7 @@ export const CycleMap: React.FC = () => {
 
   // Filter stations based on status history
   const filteredStations = useMemo(() => {
-    let stations = stationHistoryService.getFilteredStations(
+    let filteredStationsData = stationHistoryService.getFilteredStations(
       stations,
       statusFilter,
       timeFilter,
@@ -74,10 +74,10 @@ export const CycleMap: React.FC = () => {
     
     // Apply e-bike filter if enabled
     if (showEBikesOnly) {
-      stations = stations.filter(station => station.availableEBikes > 0);
+      filteredStationsData = filteredStationsData.filter(station => station.availableEBikes > 0);
     }
     
-    return stations;
+    return filteredStationsData;
   }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount, showEBikesOnly]);
 
   // Show TfL stations unless "Custom Only" is explicitly selected
