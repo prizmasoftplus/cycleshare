@@ -575,7 +575,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
       {/* Search */}
       <div className="bg-white rounded-lg shadow-lg border-2 border-black p-3 sm:w-80">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-500 w-4 h-4" />
           <input
             type="text"
             placeholder="Search stations..."
