@@ -47,6 +47,9 @@ export const CycleMap: React.FC = () => {
   // State for e-bike filter
   const [showEBikesOnly, setShowEBikesOnly] = useState(false);
 
+  // State for favorites filter
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
   // State for user guide modal
   const [isUserGuideOpen, setIsUserGuideOpen] = useState(false);
 
@@ -77,8 +80,13 @@ export const CycleMap: React.FC = () => {
       filteredStationsData = filteredStationsData.filter(station => station.availableEBikes > 0);
     }
     
+    // Apply favorites filter if enabled
+    if (showFavoritesOnly) {
+      filteredStationsData = filteredStationsData.filter(station => favoriteIds.includes(station.id));
+    }
+    
     return filteredStationsData;
-  }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount, showEBikesOnly]);
+  }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount, showEBikesOnly, showFavoritesOnly, favoriteIds]);
 
   // Show TfL stations unless "Custom Only" is explicitly selected
   const displayedStations = useMemo(() => {
@@ -305,6 +313,9 @@ export const CycleMap: React.FC = () => {
         onCustomLabelsChange={setSelectedCustomLabels}
         showEBikesOnly={showEBikesOnly}
         onToggleEBikesOnly={() => setShowEBikesOnly(!showEBikesOnly)}
+        showFavoritesOnly={showFavoritesOnly}
+        onToggleFavoritesOnly={() => setShowFavoritesOnly(!showFavoritesOnly)}
+        favoritesCount={favoriteIds.length}
       />
 
       <StationModal

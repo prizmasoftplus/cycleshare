@@ -39,6 +39,9 @@ interface MapControlsProps {
   onCustomLabelsChange: (labels: string[]) => void;
   showEBikesOnly: boolean;
   onToggleEBikesOnly: () => void;
+  showFavoritesOnly: boolean;
+  onToggleFavoritesOnly: () => void;
+  favoritesCount: number;
 }
 
 export const MapControls: React.FC<MapControlsProps> = ({
@@ -74,7 +77,10 @@ export const MapControls: React.FC<MapControlsProps> = ({
   selectedCustomLabels,
   onCustomLabelsChange,
   showEBikesOnly,
-  onToggleEBikesOnly
+  onToggleEBikesOnly,
+  showFavoritesOnly,
+  onToggleFavoritesOnly,
+  favoritesCount
 }) => {
   const [isAreaMenuOpen, setIsAreaMenuOpen] = useState(false);
   const [isTimeFilterOpen, setIsTimeFilterOpen] = useState(false);
@@ -324,6 +330,17 @@ export const MapControls: React.FC<MapControlsProps> = ({
                 title="Show only stations with e-bikes available"
               >
                 E-Bikes Only ({eBikeStationsCount})
+              </button>
+              <button
+                onClick={onToggleFavoritesOnly}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                  showFavoritesOnly 
+                    ? 'bg-amber-100 text-amber-700 border border-amber-300' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                title="Show only favorite stations"
+              >
+                ⭐ Favorites Only ({favoritesCount})
               </button>
               
               {/* Time Filter Dropdown */}
