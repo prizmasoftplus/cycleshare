@@ -262,12 +262,12 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
       return { lat, lng };
     };
 
-    console.log('Requesting directions...');
+    console.log('Requesting directions from', origin.name, 'to', destination.name);
     directionsService.route(
       {
         origin: getLatLng(origin),
         destination: getLatLng(destination),
-        travelMode: google.maps.TravelMode.DRIVING,
+        travelMode: google.maps.TravelMode.BICYCLING, // Changed to bicycling for bike routes
       },
       (result, status) => {
         console.log('Directions result:', status, result);

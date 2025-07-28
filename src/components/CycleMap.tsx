@@ -147,13 +147,19 @@ export const CycleMap: React.FC = () => {
   }, []);
 
   const handleStationClick = (station: StationStats) => {
-    if (origin && !destination && origin.id !== station.id) {
-      // If origin is set, the next click is the destination
-      setDestination(station);
-      console.log('Setting destination:', station.name);
-      console.log('Route from:', origin.name, 'to:', station.name);
+    // If we're in directions mode (origin is set but no destination)
+    if (origin && !destination) {
+      if (origin.id === station.id) {
+        // Clicking the same station - just open the modal
+        setSelectedStation(station);
+      } else {
+        // Different station - set as destination
+        setDestination(station);
+        console.log('Setting destination:', station.name);
+        console.log('Route from:', origin.name, 'to:', station.name);
+      }
     } else {
-      // Otherwise, just select the station to open the modal
+      // Normal mode - just open the station modal
       setSelectedStation(station);
     }
   };
