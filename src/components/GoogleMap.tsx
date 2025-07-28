@@ -243,13 +243,9 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
   // Handle directions request
   useEffect(() => {
     if (!origin || !destination || !googleMapRef.current || !directionsRendererRef.current) {
-      if (directionsRendererRef.current) {
-        // Clear previous routes by setting an empty result
-        directionsRendererRef.current.setDirections({
-          geocoded_waypoints: [],
-          routes: [],
-          request: {} as google.maps.DirectionsRequest
-        });
+      // Clear previous routes when no origin/destination
+      if (directionsRendererRef.current && (!origin || !destination)) {
+        directionsRendererRef.current.setDirections({ routes: [] } as google.maps.DirectionsResult);
       }
       return;
     }
@@ -274,7 +270,11 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
           directionsRendererRef.current?.setDirections(result);
           onDirectionsResult(result);
         } else {
-          console.error(`error fetching directions ${result}`);
+          console.error(`Error fetching directions: ${status}`, result);
+          // Clear any existing directions on error
+          if (directionsRendererRef.current) {
+            directionsRendererRef.current.setDirections({ routes: [] } as google.maps.DirectionsResult);
+          }
         }
       }
     );

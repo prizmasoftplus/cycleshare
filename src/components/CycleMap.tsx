@@ -150,6 +150,7 @@ export const CycleMap: React.FC = () => {
     if (origin && !destination) {
       // If origin is set, the next click is the destination
       setDestination(station);
+      console.log('Setting destination:', station.name);
     } else {
       // Otherwise, just select the station to open the modal
       setSelectedStation(station);
@@ -205,6 +206,7 @@ export const CycleMap: React.FC = () => {
 
   const handleGetDirectionsClick = () => {
     if (!selectedStation) return;
+    console.log('Setting origin:', selectedStation.name);
     setOrigin(selectedStation);
     setDestination(null);
     setDirectionsResult(null);
