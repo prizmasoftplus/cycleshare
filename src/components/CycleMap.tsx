@@ -151,15 +151,17 @@ export const CycleMap: React.FC = () => {
     if (origin && !destination) {
       if (origin.id === station.id) {
         // Clicking the same station - just open the modal
+        console.log('Clicking same origin station, opening modal');
         setSelectedStation(station);
       } else {
         // Different station - set as destination
-        setDestination(station);
         console.log('Setting destination:', station.name);
         console.log('Route from:', origin.name, 'to:', station.name);
+        setDestination(station);
       }
     } else {
       // Normal mode - just open the station modal
+      console.log('Normal mode - opening station modal for:', station.name);
       setSelectedStation(station);
     }
   };
@@ -214,13 +216,16 @@ export const CycleMap: React.FC = () => {
   const handleGetDirectionsClick = () => {
     if (!selectedStation) return;
     console.log('Setting origin:', selectedStation.name);
+    console.log('Current state before setting origin:', { origin: origin?.name, destination: destination?.name });
     setOrigin(selectedStation);
     setDestination(null);
     setDirectionsResult(null);
     setSelectedStation(null); // Close modal and enter directions mode
+    console.log('Entered directions mode with origin:', selectedStation.name);
   };
 
   const handleClearDirections = () => {
+    console.log('Clearing directions');
     setOrigin(null);
     setDestination(null);
     setDirectionsResult(null);
@@ -335,11 +340,18 @@ export const CycleMap: React.FC = () => {
 
       {/* Directions Mode Indicator */}
       {origin && !destination && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+        <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg border-2 border-white">
           <p className="text-sm font-medium">
             📍 Origin set: <strong>{origin.name}</strong>
           </p>
-          <p className="text-xs opacity-90">Click another station to set destination</p>
+          <p className="text-xs opacity-90 text-center mt-1">Click another station to set destination</p>
+          <button
+            onClick={handleClearDirections}
+            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+            title="Cancel directions"
+          >
+            ×
+          </button>
         </div>
       )}
 
