@@ -11,6 +11,7 @@ import { useAreas, SavedArea } from '../hooks/useAreas';
 import { usePriorities, PriorityLevel } from '../hooks/usePriorities';
 import { stationHistoryService, StatusFilter, TimeFilter } from '../services/stationHistoryService';
 import { customStationsService, CustomStation } from '../services/customStationsService';
+import { UserGuideModal } from './UserGuideModal';
 
 export const CycleMap: React.FC = () => {
   const [bikePoints, setBikePoints] = useState<BikePoint[]>([]);
@@ -48,6 +49,9 @@ export const CycleMap: React.FC = () => {
   const [isCustomStationModalOpen, setIsCustomStationModalOpen] = useState(false);
   const [editingCustomStation, setEditingCustomStation] = useState<CustomStation | null>(null);
   const [selectedCustomLabels, setSelectedCustomLabels] = useState<string[]>([]);
+
+  // State for user guide modal
+  const [isUserGuideOpen, setIsUserGuideOpen] = useState(false);
 
   // Filter custom stations by selected labels
   const filteredCustomStations = useMemo(() => {
@@ -343,6 +347,11 @@ export const CycleMap: React.FC = () => {
         customStationsCount={customStations.length}
       />
 
+      <UserGuideModal
+        isOpen={isUserGuideOpen}
+        onClose={() => setIsUserGuideOpen(false)}
+      />
+
       {isLoading && (
         <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center z-[1001]">
           <div className="bg-white rounded-lg p-6 shadow-xl">
@@ -356,8 +365,14 @@ export const CycleMap: React.FC = () => {
 
       {/* Footer Bar */}
       <div className="absolute bottom-0 left-0 right-0 z-[999] bg-white border-t border-gray-200 px-4 py-2">
-        <div className="flex items-center justify-center text-xs text-gray-600">
+        <div className="flex items-center justify-between text-xs text-gray-600">
           <span>Developed by <strong>Munavar Moghal</strong> • © <strong>Avizaa Ltd</strong></span>
+          <button
+            onClick={() => setIsUserGuideOpen(true)}
+            className="text-blue-600 hover:text-blue-800 font-medium underline"
+          >
+            User Guide
+          </button>
         </div>
       </div>
     </div>
