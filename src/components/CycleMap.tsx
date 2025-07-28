@@ -156,24 +156,7 @@ export const CycleMap: React.FC = () => {
     });
     
     // If we're in directions mode (origin is set but no destination)
-    if (origin && !destination && origin.id !== station.id) {
-      // Different station - set as destination
-      console.log('DIRECTIONS MODE: Setting destination:', station.name);
-      console.log('DIRECTIONS MODE: Route from:', origin.name, 'to:', station.name);
-      setDestination(station);
-      // Don't open the modal when setting destination
-      return;
-    }
-    } else if (origin && !destination && origin.id === station.id) {
-      // Clicking the same origin station - just open the modal
-      console.log('Clicking same origin station, opening modal');
-      setSelectedStation(station);
-    } else {
-      // Normal mode - just open the station modal
-      console.log('Normal mode - opening station modal for:', station.name);
-      setSelectedStation(station);
-    }
-  };
+    if (origin && !destination) {
       if (origin.id === station.id) {
         // Clicking the same station - just open the modal
         console.log('Clicking same origin station, opening modal');
