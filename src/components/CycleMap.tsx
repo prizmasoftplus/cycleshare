@@ -163,6 +163,7 @@ export const CycleMap: React.FC = () => {
       setDestination(station);
       // Don't open the modal when setting destination
       return;
+    }
     } else if (origin && !destination && origin.id === station.id) {
       // Clicking the same origin station - just open the modal
       console.log('Clicking same origin station, opening modal');
