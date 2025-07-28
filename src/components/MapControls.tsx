@@ -218,7 +218,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
   return (
     <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col sm:flex-row gap-2">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-lg p-3 flex-1">
+      <div className="bg-white rounded-lg shadow-lg border-2 border-black p-3 flex-1">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold text-gray-900">TfL Cycle Share</h1>
@@ -573,7 +573,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-lg shadow-lg p-3 sm:w-80">
+      <div className="bg-white rounded-lg shadow-lg border-2 border-black p-3 sm:w-80">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
@@ -603,7 +603,7 @@ export const MapControls: React.FC<MapControlsProps> = ({
 
       {/* Legend */}
       {showFilter && (
-        <div className="bg-white rounded-lg shadow-lg p-3 sm:w-64">
+        <div className="bg-white rounded-lg shadow-lg border-2 border-black p-3 sm:w-64">
           <h3 className="text-sm font-medium text-gray-900 mb-2 flex items-center">
             <Info className="w-4 h-4 mr-1" />
             Station Status
