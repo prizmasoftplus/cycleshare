@@ -353,6 +353,13 @@ export const CycleMap: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Footer Bar */}
+      <div className="absolute bottom-0 left-0 right-0 z-[999] bg-white border-t border-gray-200 px-4 py-2">
+        <div className="flex items-center justify-center text-xs text-gray-600">
+          <span>Developed by <strong>Munavar Moghal</strong> • © <strong>Avizaa Ltd</strong></span>
+        </div>
+      </div>
     </div>
   );
 };
