@@ -44,6 +44,9 @@ export const CycleMap: React.FC = () => {
   const [editingCustomStation, setEditingCustomStation] = useState<CustomStation | null>(null);
   const [selectedCustomLabels, setSelectedCustomLabels] = useState<string[]>([]);
 
+  // State for e-bike filter
+  const [showEBikesOnly, setShowEBikesOnly] = useState(false);
+
   // State for user guide modal
   const [isUserGuideOpen, setIsUserGuideOpen] = useState(false);
 
@@ -61,14 +64,21 @@ export const CycleMap: React.FC = () => {
 
   // Filter stations based on status history
   const filteredStations = useMemo(() => {
-    return stationHistoryService.getFilteredStations(
+    let stations = stationHistoryService.getFilteredStations(
       stations,
       statusFilter,
       timeFilter,
       customMinutes,
       notInUseCount
     );
-  }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount]);
+    
+    // Apply e-bike filter if enabled
+    if (showEBikesOnly) {
+      stations = stations.filter(station => station.availableEBikes > 0);
+    }
+    
+    return stations;
+  }, [stations, statusFilter, timeFilter, customMinutes, notInUseCount, showEBikesOnly]);
 
   // Show TfL stations unless "Custom Only" is explicitly selected
   const displayedStations = useMemo(() => {
@@ -293,6 +303,8 @@ export const CycleMap: React.FC = () => {
         customStations={customStations}
         selectedCustomLabels={selectedCustomLabels}
         onCustomLabelsChange={setSelectedCustomLabels}
+        showEBikesOnly={showEBikesOnly}
+        onToggleEBikesOnly={() => setShowEBikesOnly(!showEBikesOnly)}
       />
 
       <StationModal

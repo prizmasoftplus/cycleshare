@@ -37,6 +37,8 @@ interface MapControlsProps {
   customStations: CustomStation[];
   selectedCustomLabels: string[];
   onCustomLabelsChange: (labels: string[]) => void;
+  showEBikesOnly: boolean;
+  onToggleEBikesOnly: () => void;
 }
 
 export const MapControls: React.FC<MapControlsProps> = ({
@@ -71,6 +73,8 @@ export const MapControls: React.FC<MapControlsProps> = ({
   customStations,
   selectedCustomLabels,
   onCustomLabelsChange
+  showEBikesOnly,
+  onToggleEBikesOnly
 }) => {
   const [isAreaMenuOpen, setIsAreaMenuOpen] = useState(false);
   const [isTimeFilterOpen, setIsTimeFilterOpen] = useState(false);
@@ -83,6 +87,9 @@ export const MapControls: React.FC<MapControlsProps> = ({
 
   // Get unique custom station labels
   const customLabels = [...new Set(customStations.map(s => s.label).filter(Boolean))].sort();
+
+  // Calculate e-bike stations count
+  const eBikeStationsCount = allStations.filter(station => station.availableEBikes > 0).length;
 
   // Calculate filter counts
   const getFilterCount = (filterType: StatusFilter): number => {
@@ -306,6 +313,17 @@ export const MapControls: React.FC<MapControlsProps> = ({
                 title="Show stations that have specific number of docks not in use"
               >
                 Not In Use ({getFilterCount('notinuse_count')})
+              </button>
+              <button
+                onClick={onToggleEBikesOnly}
+                className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                  showEBikesOnly 
+                    ? 'bg-indigo-100 text-indigo-700 border border-indigo-300' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                title="Show only stations with e-bikes available"
+              >
+                E-Bikes Only ({eBikeStationsCount})
               </button>
               
               {/* Time Filter Dropdown */}
