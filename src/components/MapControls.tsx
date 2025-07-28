@@ -222,7 +222,10 @@ export const MapControls: React.FC<MapControlsProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold text-gray-900">TfL Cycle Share</h1>
-            <p className="text-sm text-gray-600">{totalStations} stations</p>
+            <p className="text-sm text-gray-600">
+              {totalStations} stations
+              {/* Add directions status indicator */}
+            </p>
           </div>
           <div className="flex items-center space-x-2">
             {/* Status Filter Buttons */}

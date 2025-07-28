@@ -147,10 +147,11 @@ export const CycleMap: React.FC = () => {
   }, []);
 
   const handleStationClick = (station: StationStats) => {
-    if (origin && !destination) {
+    if (origin && !destination && origin.id !== station.id) {
       // If origin is set, the next click is the destination
       setDestination(station);
       console.log('Setting destination:', station.name);
+      console.log('Route from:', origin.name, 'to:', station.name);
     } else {
       // Otherwise, just select the station to open the modal
       setSelectedStation(station);
@@ -325,6 +326,16 @@ export const CycleMap: React.FC = () => {
         selectedCustomLabels={selectedCustomLabels}
         onCustomLabelsChange={setSelectedCustomLabels}
       />
+
+      {/* Directions Mode Indicator */}
+      {origin && !destination && (
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[1000] bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+          <p className="text-sm font-medium">
+            📍 Origin set: <strong>{origin.name}</strong>
+          </p>
+          <p className="text-xs opacity-90">Click another station to set destination</p>
+        </div>
+      )}
 
       {directionsResult && <DirectionsInfo result={directionsResult} onClear={handleClearDirections} />}
 

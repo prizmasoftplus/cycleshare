@@ -242,6 +242,8 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
 
   // Handle directions request
   useEffect(() => {
+    console.log('Directions effect triggered:', { origin: origin?.name, destination: destination?.name });
+    
     if (!origin || !destination || !googleMapRef.current || !directionsRendererRef.current) {
       // Clear previous routes when no origin/destination
       if (directionsRendererRef.current && (!origin || !destination)) {
@@ -256,9 +258,11 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
       const parts = station.id.split('_');
       const lat = parseFloat(parts[parts.length - 2]);
       const lng = parseFloat(parts[parts.length - 1]);
+      console.log('Station coordinates:', station.name, { lat, lng });
       return { lat, lng };
     };
 
+    console.log('Requesting directions...');
     directionsService.route(
       {
         origin: getLatLng(origin),
@@ -266,9 +270,11 @@ function Map({ stations, onStationClick, searchTerm, favoriteIds, origin, destin
         travelMode: google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
+        console.log('Directions result:', status, result);
         if (status === google.maps.DirectionsStatus.OK && result) {
           directionsRendererRef.current?.setDirections(result);
           onDirectionsResult(result);
+          console.log('Directions successfully displayed');
         } else {
           console.error(`Error fetching directions: ${status}`, result);
           // Clear any existing directions on error
